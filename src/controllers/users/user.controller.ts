@@ -1,39 +1,43 @@
-import { Get, JsonController, Param, Patch, Post } from "routing-controllers";
-import { getList } from "./handlers/getList.handler.js";
-import { create } from "./handlers/create.handler.js"
+import { Delete, Get, JsonController, Param, Patch, Post } from "routing-controllers";
+import { createUser } from "./handlers/createUser.handler.js"
 import { Body, Representer, StatusCode } from "@panenco/papi";
 import { UserBody } from "../../contracts/user.body.js";
 import { UserView } from "../../contracts/user.view.js";
-import { get } from "./handlers/get.handler.js";
+import { getUser } from "./handlers/getUser.handler.js";
 import { buyProduct } from "./handlers/buyProduct.handler.js";
 import { ProductBody } from "../../contracts/product.body.js";
 import { ProductView } from "../../contracts/product.view.js";
+import { storeProduct } from "./handlers/storeProduct.handler.js";
 
 @JsonController("/users")
 export class UserController{
 
-    @Get("/")
-    async getList(){
-        return getList();
-    }
-
     @Post("/")
     @Representer(UserView, StatusCode.created)
-    async create(@Body() body: UserBody){
-        return create(body);
+    async createUser(@Body() body: UserBody){
+        return createUser(body);
     }
 
     @Get("/:id")
     @Representer(UserView, StatusCode.ok)
-    async get(@Param("id") id: string){
-        return get(id);
+    async getUser(@Param("id") id: string){
+        return getUser(id);
+
     }
 
-    @Post("/:id")
+    @Post("/:id/products")
     @Representer(ProductView, StatusCode.created)
     async buyProduct(@Param("id") id: string,
                      @Body() body: ProductBody){
         return buyProduct(id, body)
+    }
+
+    @Patch("/:id/products/:productId/fridges/:fridgeName")
+    async storeProduct(@Param("id") id: string,
+                        @Param("productId") productId: string,
+                        @Param("fridgeName") fridgeName: string,
+                        ){
+        return storeProduct(id, productId, fridgeName);
     }
 
 }

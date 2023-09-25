@@ -1,6 +1,7 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/core";
 import { User } from "./user.entity.js";
 import { randomUUID } from "crypto";
+import { Fridge } from "./fridge.entity.js";
 
 
 @Entity()
@@ -17,4 +18,7 @@ export class Product{
 
     @ManyToOne('User')
     public owner: User; 
+
+    @ManyToOne('Fridge')
+    public fridge?: Fridge;
 }
