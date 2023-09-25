@@ -7,6 +7,10 @@ export class UserView{
 
     @Expose()
     @IsString()
+    public id: string
+
+    @Expose()
+    @IsString()
     public name: string;
 
     @Expose()

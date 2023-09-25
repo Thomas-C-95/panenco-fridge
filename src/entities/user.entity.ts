@@ -1,5 +1,6 @@
-import { BaseEntity, Entity, PrimaryKey, Property } from "@mikro-orm/core";
+import { BaseEntity, Collection, Entity, OneToMany, PrimaryKey, Property } from "@mikro-orm/core";
 import { randomUUID } from "crypto";
+import { Product } from "./product.entity.js";
 
 
 @Entity()
@@ -14,8 +15,7 @@ export class User extends BaseEntity<User, 'id'>{
     @Property()
     public name: string;
 
-    // Think about this
-    @Property()
-    public products: string[] = [];
+    @OneToMany('Product', 'owner')
+    public products = new Collection<Product>(this);
     
 }

@@ -5,6 +5,7 @@ import { errorMiddleware } from '@panenco/papi';
 import { MikroORM, RequestContext } from '@mikro-orm/core';
 import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 import ormconfig from './orm.config.js';
+import { FridgeController } from './controllers/fridges/fridge.controller.js';
 export class App {
 
   public orm: MikroORM<PostgreSqlDriver>;
@@ -30,7 +31,7 @@ export class App {
     });
 
     // init controllers
-    this.initializeControllers([UserController])
+    this.initializeControllers([UserController, FridgeController])
 
     // Test base url
     this.host.get('/', (req: Request, res: Response, next: NextFunction) => {
