@@ -2,9 +2,14 @@ import express, { Application, NextFunction, Request, Response } from 'express';
 import { useExpressServer } from 'routing-controllers';
 import { UserController } from './controllers/users/user.controller.js';
 import { errorMiddleware } from '@panenco/papi';
-
+import { MikroORM, RequestContext } from '@mikro-orm/core';
+import { PostgreSqlDriver } from '@mikro-orm/postgresql';
+import ormconfig from './orm.config.js';
 export class App {
+
+  public orm: MikroORM<PostgreSqlDriver>;
   host: Application;
+
   constructor () {
     
     // init server
@@ -18,6 +23,11 @@ export class App {
       console.log(req.method, req.url);
       next();
     })
+
+    // Init Entity Manager
+    this.host.use((req, __, next: NextFunction) => {
+      RequestContext.create(this.orm.em, next);
+    });
 
     // init controllers
     this.initializeControllers([UserController])
@@ -40,6 +50,15 @@ export class App {
       defaultErrorHandler: false,
       routePrefix: '/api',
     })
+  }
+
+  public async createConnection() {
+    try{
+      this.orm = await MikroORM.init(ormconfig);
+    }
+    catch(error){
+      console.log("Error while connecting to the database", error)
+    }
   }
 
   listen() {

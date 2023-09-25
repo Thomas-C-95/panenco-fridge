@@ -1,0 +1,11 @@
+version: '3'
+services:
+  postgres:
+    container_name: node-assignment
+    image: postgres:latest
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./data/postgres:/data/node-assignment
+    env_file:
+      - docker.env
