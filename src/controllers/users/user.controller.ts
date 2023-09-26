@@ -8,6 +8,7 @@ import { buyProduct } from "./handlers/buyProduct.handler.js";
 import { ProductBody } from "../../contracts/product.body.js";
 import { ProductView } from "../../contracts/product.view.js";
 import { storeProduct } from "./handlers/storeProduct.handler.js";
+import { deleteProduct } from "./handlers/deleteProduct.handler.js";
 
 @JsonController("/users")
 export class UserController{
@@ -41,4 +42,12 @@ export class UserController{
         return storeProduct(id, productId, fridgeName);
     }
 
+    @Delete("/:id/products/:productId/fridges/:fridgeName")
+    @Representer(null, StatusCode.noContent)
+    async deleteProduct(@Param("id") id: string,
+                        @Param("productId") productID: string,
+                        @Param("fridgeName") fridgeName: string){
+    
+        return deleteProduct(id, productID, fridgeName)
+    }
 }
