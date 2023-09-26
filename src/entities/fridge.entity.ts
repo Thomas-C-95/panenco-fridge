@@ -1,4 +1,4 @@
-import { BaseEntity, Collection, Entity, OneToMany, PrimaryKey, Property } from "@mikro-orm/core";
+import { BaseEntity, Collection, Entity, ManyToMany, OneToMany, PrimaryKey, Property } from "@mikro-orm/core";
 import { Product } from "./product.entity.js";
 
 @Entity()
@@ -13,6 +13,6 @@ export class Fridge extends BaseEntity<Fridge, 'name'>{
     @Property()
     public capacity: number;
 
-    @OneToMany('Product', 'fridge')
+    @ManyToMany(()=> Product, 'fridge', {owner: true})
     public contents = new Collection<Product>(this);
 }

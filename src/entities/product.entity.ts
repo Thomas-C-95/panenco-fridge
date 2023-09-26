@@ -1,4 +1,5 @@
-import { Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/core";
+import { Entity, ManyToMany, ManyToOne, PrimaryKey, Property} from "@mikro-orm/core";
+import { Collection } from "@mikro-orm/core";
 import { User } from "./user.entity.js";
 import { randomUUID } from "crypto";
 import { Fridge } from "./fridge.entity.js";
@@ -19,6 +20,6 @@ export class Product{
     @ManyToOne('User')
     public owner: User; 
 
-    @ManyToOne('Fridge')
-    public fridge?: Fridge;
+    @ManyToMany(() => Fridge, fridge => fridge.contents, {nullable: true}) // many to many -> many to zero
+    public fridge = new Collection<Fridge>(this);
 }

@@ -142,15 +142,6 @@
           "primary": false,
           "nullable": false,
           "mappedType": "uuid"
-        },
-        "fridge_name": {
-          "name": "fridge_name",
-          "type": "varchar(255)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "string"
         }
       },
       "name": "product",
@@ -179,17 +170,70 @@
           ],
           "referencedTableName": "public.user",
           "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "fridge_name": {
+          "name": "fridge_name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "string"
         },
-        "product_fridge_name_foreign": {
-          "constraintName": "product_fridge_name_foreign",
+        "product_id": {
+          "name": "product_id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "uuid"
+        }
+      },
+      "name": "fridge_contents",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "fridge_contents_pkey",
+          "columnNames": [
+            "fridge_name",
+            "product_id"
+          ],
+          "composite": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "fridge_contents_fridge_name_foreign": {
+          "constraintName": "fridge_contents_fridge_name_foreign",
           "columnNames": [
             "fridge_name"
           ],
-          "localTableName": "public.product",
+          "localTableName": "public.fridge_contents",
           "referencedColumnNames": [
             "name"
           ],
           "referencedTableName": "public.fridge",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        },
+        "fridge_contents_product_id_foreign": {
+          "constraintName": "fridge_contents_product_id_foreign",
+          "columnNames": [
+            "product_id"
+          ],
+          "localTableName": "public.fridge_contents",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.product",
+          "deleteRule": "cascade",
           "updateRule": "cascade"
         }
       }
