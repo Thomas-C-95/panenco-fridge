@@ -9,9 +9,9 @@ import { ProductBody } from "../../contracts/product.body.js";
 import { ProductView } from "../../contracts/product.view.js";
 import { storeProduct } from "./handlers/storeProduct.handler.js";
 import { deleteProduct } from "./handlers/deleteProduct.handler.js";
-import { get } from "http";
 import { SearchQuery } from "../../contracts/search.query.js";
 import { getProductList } from "./handlers/getProductList.handler.js";
+import { getProduct } from "./handlers/getProduct.handler.js";
 
 @JsonController("/users")
 export class UserController{
@@ -43,6 +43,13 @@ export class UserController{
         return buyProduct(id, body)
     }
 
+    @Get("/:id/products/:productId")
+    @Representer(ProductView, StatusCode.ok)
+    async getProduct(@Param("id") id: string,
+                     @Param("productId") productId: string){
+        return getProduct(id, productId);
+    }
+
     @Patch("/:id/products/:productId/fridges/:fridgeName")
     @Representer(ProductView, StatusCode.ok)
     async store(@Param("id") id: string,
@@ -55,9 +62,9 @@ export class UserController{
     @Delete("/:id/products/:productId/fridges/:fridgeName")
     @Representer(null, StatusCode.noContent)
     async deleteProduct(@Param("id") id: string,
-                        @Param("productId") productID: string,
+                        @Param("productId") productId: string,
                         @Param("fridgeName") fridgeName: string){
     
-        return deleteProduct(id, productID, fridgeName)
+        return deleteProduct(id, productId, fridgeName)
     }
 }
