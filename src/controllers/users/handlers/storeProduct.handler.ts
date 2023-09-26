@@ -15,6 +15,7 @@ export const storeProduct = async (userId: string, productId: string, fridgeName
 
     const fridge = await em.findOne(Fridge, {'name': fridgeName});
 
+    await fridge.contents.init();
     const currentStorage = fridge.contents.getItems().map(prod=>prod.size).reduce((a,b)=>a+b, 0);
 
     if (currentStorage + product.size > fridge.capacity){

@@ -11,5 +11,4 @@ export const getProductList = (userId:string, query: SearchQuery) => {
                                         {type: {$ilike: `%${query.search}%`}}
                                         :{})
     
-    return;
 }

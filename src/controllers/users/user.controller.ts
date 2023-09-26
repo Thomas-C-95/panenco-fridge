@@ -12,6 +12,7 @@ import { deleteProduct } from "./handlers/deleteProduct.handler.js";
 import { SearchQuery } from "../../contracts/search.query.js";
 import { getProductList } from "./handlers/getProductList.handler.js";
 import { getProduct } from "./handlers/getProduct.handler.js";
+import { getFridgeProductList } from "./handlers/getFridgeProductList.handler.js";
 
 @JsonController("/users")
 export class UserController{
@@ -48,6 +49,15 @@ export class UserController{
     async getProduct(@Param("id") id: string,
                      @Param("productId") productId: string){
         return getProduct(id, productId);
+    }
+
+    @Get("/:id/fridges/:fridgeName")
+    @ListRepresenter(ProductView, StatusCode.ok)
+    async getFridgeProducts(@Param("id") id: string,
+                            @Param("fridgeName") fridgeName: string,
+                            @Query() query: SearchQuery){
+    
+        return getFridgeProductList(id, fridgeName, query)
     }
 
     @Patch("/:id/products/:productId/fridges/:fridgeName")
