@@ -15,5 +15,5 @@ export const transferAllProducts = async (ownerId: string, receiverId: string)=>
     receiver.products.add(products);
 
     await em.persistAndFlush([owner, receiver]);
-    return;
+    return [products, products.length];
 }

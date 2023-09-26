@@ -15,6 +15,7 @@ import { getProduct } from "./handlers/getProduct.handler.js";
 import { getFridgeProductList } from "./handlers/getFridgeProductList.handler.js";
 import { transferProduct } from "./handlers/transferProduct.handler.js";
 import { transferAllProducts } from "./handlers/transferAllProducts.handler.js";
+import { transferFridgeProducts } from "./handlers/transferFridgeProducts.js";
 
 @JsonController("/users")
 export class UserController{
@@ -81,15 +82,24 @@ export class UserController{
 
     }
     
-    @Patch("/transfer/:ownerId/:receiverId/:productId")
+    @Patch("/transfer/:ownerId/:receiverId/products/:productId")
     @Representer(ProductView, StatusCode.ok)
     async transferProduct(@Param("ownerId") ownerId: string,
                           @Param("receiverId") receiverId: string,
                           @Param("productId") productId: string){
         return transferProduct(ownerId, receiverId, productId)
     }
-    @Patch("/transfer/:ownerId/:receiverId")
-    @Representer(null, StatusCode.ok)
+
+    @Patch("/transfer/:ownerId/:receiverId/fridges/:fridgeName")
+    @ListRepresenter(ProductView, StatusCode.ok)
+    async transferFridge(@Param("ownerId") ownerId: string,
+                        @Param("receiverId") receiverId: string,
+                        @Param("fridgeName") fridgeName: string){
+        return transferFridgeProducts(ownerId,receiverId,fridgeName)
+    }
+
+    @Patch("/transfer/:ownerId/:receiverId/products")
+    @ListRepresenter(ProductView, StatusCode.ok)
     async transferAllProducts(@Param("ownerId") ownerId: string,
                               @Param("receiverId") receiverId: string){
         return transferAllProducts(ownerId, receiverId)
