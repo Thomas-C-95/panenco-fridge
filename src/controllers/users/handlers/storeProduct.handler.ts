@@ -15,6 +15,12 @@ export const storeProduct = async (userId: string, productId: string, fridgeName
 
     const fridge = await em.findOne(Fridge, {'name': fridgeName});
 
+    const currentStorage = fridge.contents.getItems().map(prod=>prod.size).reduce((a,b)=>a+b, 0);
+
+    if (currentStorage + product.size > fridge.capacity){
+        throw new Forbidden("exceedsCapacity", 'Fidge capacity would be exceeded');
+    }
+
     fridge.contents.add(product);
 
     await em.persistAndFlush(fridge);
