@@ -1,6 +1,6 @@
 import { Delete, Get, JsonController, Param, Patch, Post } from "routing-controllers";
 import { createUser } from "./handlers/createUser.handler.js"
-import { Body, Representer, StatusCode } from "@panenco/papi";
+import { Body, ListRepresenter, Query, Representer, StatusCode } from "@panenco/papi";
 import { UserBody } from "../../contracts/user.body.js";
 import { UserView } from "../../contracts/user.view.js";
 import { getUser } from "./handlers/getUser.handler.js";
@@ -9,6 +9,9 @@ import { ProductBody } from "../../contracts/product.body.js";
 import { ProductView } from "../../contracts/product.view.js";
 import { storeProduct } from "./handlers/storeProduct.handler.js";
 import { deleteProduct } from "./handlers/deleteProduct.handler.js";
+import { get } from "http";
+import { SearchQuery } from "../../contracts/search.query.js";
+import { getProductList } from "./handlers/getProductList.handler.js";
 
 @JsonController("/users")
 export class UserController{
@@ -24,6 +27,13 @@ export class UserController{
     async getUser(@Param("id") id: string){
         return getUser(id);
 
+    }
+
+    @Get("/:id/products")
+    @ListRepresenter(ProductView, StatusCode.ok)
+    async getProducts(@Param("id") id: string,
+                      @Query() query: SearchQuery){
+        return getProductList(id, query);
     }
 
     @Post("/:id/products")
