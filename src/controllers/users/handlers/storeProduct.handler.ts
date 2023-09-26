@@ -1,7 +1,7 @@
 import { RequestContext } from "@mikro-orm/core";
 import { Product } from "../../../entities/product.entity.js";
 import { Fridge } from "../../../entities/fridge.entity.js";
-import { Unauthorized } from "@panenco/papi";
+import { Forbidden} from "@panenco/papi";
 
 
 export const storeProduct = async (userId: string, productId: string, fridgeName: string) => {
@@ -10,7 +10,7 @@ export const storeProduct = async (userId: string, productId: string, fridgeName
     const product = await em.findOne(Product, {'id': productId});
 
     if (userId !== product.owner.id) {
-           throw new Unauthorized("notProductOwner", 'You do not own this product');
+           throw new Forbidden("notProductOwner", 'You do not own this product');
     }
 
     const fridge = await em.findOne(Fridge, {'name': fridgeName});

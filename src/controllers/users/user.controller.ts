@@ -33,7 +33,8 @@ export class UserController{
     }
 
     @Patch("/:id/products/:productId/fridges/:fridgeName")
-    async storeProduct(@Param("id") id: string,
+    @Representer(ProductView, StatusCode.ok)
+    async store(@Param("id") id: string,
                         @Param("productId") productId: string,
                         @Param("fridgeName") fridgeName: string,
                         ){
