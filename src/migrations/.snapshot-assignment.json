@@ -127,12 +127,12 @@
         },
         "ingredients": {
           "name": "ingredients",
-          "type": "varchar(255)",
+          "type": "jsonb",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "mappedType": "string"
+          "mappedType": "json"
         },
         "owner_id": {
           "name": "owner_id",

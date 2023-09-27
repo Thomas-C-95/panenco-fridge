@@ -15,5 +15,5 @@ export class RecipeView{
 
     @Expose()
     @Allow()
-    public ingredients: { [key: string]: number };
+    public ingredients: {[key: string]: number};
 }

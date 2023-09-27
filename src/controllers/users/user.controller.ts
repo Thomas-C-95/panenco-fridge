@@ -22,6 +22,7 @@ import { RecipeView } from "../../contracts/recipe.view.js";
 import { getRecipeList } from "./handlers/getRecipeList.handler.js";
 import { deleteRecipe } from "./handlers/deleteRecipe.handler.js";
 import { getRecipe } from "./handlers/getRecipe.handler.js";
+import { updateRecipe } from "./handlers/updateRecipe.handler.js";
 
 @JsonController("/users")
 export class UserController{
@@ -138,5 +139,13 @@ export class UserController{
     async getRecipe(@Param("id") id: string,
                     @Param("recipeName") recipeName: string){
         return getRecipe(id, recipeName);
+    }
+
+    @Patch("/:id/recipes/:recipeName")
+    @Representer(RecipeView, StatusCode.ok)
+    async updateRecipe(@Param("id") id: string,
+                       @Param("recipeName") recipeName: string,
+                       @Body({}, {skipMissingProperties: true}) body: RecipeBody){
+        return updateRecipe(id, recipeName, body)
     }
 }

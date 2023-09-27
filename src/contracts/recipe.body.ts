@@ -15,5 +15,5 @@ export class RecipeBody{
 
     @Expose()
     @Allow()
-    public ingredients: { [key: string]: number };
+    public ingredients: {[key: string]: number};
 }
