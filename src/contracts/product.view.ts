@@ -11,6 +11,10 @@ export class ProductView{
 
     @Expose()
     @IsString()
+    public name: string;
+
+    @Expose()
+    @IsString()
     public type: string;
 
     @Expose()

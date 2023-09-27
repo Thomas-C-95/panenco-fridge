@@ -11,6 +11,9 @@ export class Product{
 
     @PrimaryKey({columnType: 'uuid'})
     public id: string = randomUUID();
+
+    @Property()
+    public name: string;
     
     @Property()
     public type: string;

@@ -124,5 +124,4 @@ export class UserController{
         return getRecipeList(id)
     }
 
-
 }

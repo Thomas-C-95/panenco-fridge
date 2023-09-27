@@ -4,7 +4,10 @@ import { IsString } from "class-validator";
 @Exclude()
 export class ProductBody {
     
-    // Type should be : food or drinks. How to validate?
+    @Expose()
+    @IsString()
+    public name: string;
+
     @Expose()
     @IsString()
     public type: string;
