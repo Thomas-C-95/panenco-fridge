@@ -20,6 +20,7 @@ import { RecipeBody } from "../../contracts/recipe.body.js";
 import { createRecipe } from "./handlers/createRecipe.handler.js";
 import { RecipeView } from "../../contracts/recipe.view.js";
 import { getRecipeList } from "./handlers/getRecipeList.handler.js";
+import { deleteRecipe } from "./handlers/deleteRecipe.handler.js";
 
 @JsonController("/users")
 export class UserController{
@@ -124,4 +125,10 @@ export class UserController{
         return getRecipeList(id)
     }
 
+    @Delete("/:id/recipes/:recipeName")
+    @Representer(null, StatusCode.noContent)
+    async deleteRecipe(@Param("id") id: string,
+                       @Param("recipeName") recipeName: string){
+        return deleteRecipe(id, recipeName);
+    }
 }

@@ -19,7 +19,7 @@ export class User extends BaseEntity<User, 'id'>{
     @OneToMany(()=> Product, product => product.owner, {orphanRemoval:true})
     public products = new Collection<Product>(this);
 
-    @OneToMany(() => Recipe, recipy => recipy.owner)
+    @OneToMany(() => Recipe, recipy => recipy.owner, {orphanRemoval:true})
     public recipes = new Collection<Recipe>(this);
     
 }
