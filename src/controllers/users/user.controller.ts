@@ -21,6 +21,7 @@ import { createRecipe } from "./handlers/createRecipe.handler.js";
 import { RecipeView } from "../../contracts/recipe.view.js";
 import { getRecipeList } from "./handlers/getRecipeList.handler.js";
 import { deleteRecipe } from "./handlers/deleteRecipe.handler.js";
+import { getRecipe } from "./handlers/getRecipe.handler.js";
 
 @JsonController("/users")
 export class UserController{
@@ -130,5 +131,12 @@ export class UserController{
     async deleteRecipe(@Param("id") id: string,
                        @Param("recipeName") recipeName: string){
         return deleteRecipe(id, recipeName);
+    }
+
+    @Get("/:id/recipes/:recipeName")
+    @Representer(RecipeView, StatusCode.ok)
+    async getRecipe(@Param("id") id: string,
+                    @Param("recipeName") recipeName: string){
+        return getRecipe(id, recipeName);
     }
 }
