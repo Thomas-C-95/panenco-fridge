@@ -1,6 +1,7 @@
 import { BaseEntity, Collection, Entity, OneToMany, PrimaryKey, Property } from "@mikro-orm/core";
 import { randomUUID } from "crypto";
 import { Product } from "./product.entity.js";
+import { Recipe } from "./recipe.entity.js";
 
 
 @Entity()
@@ -17,5 +18,8 @@ export class User extends BaseEntity<User, 'id'>{
 
     @OneToMany(()=> Product, product => product.owner, {orphanRemoval:true})
     public products = new Collection<Product>(this);
+
+    @OneToMany(() => Recipe, recipy => recipy.owner)
+    public recipes = new Collection<Recipe>(this);
     
 }

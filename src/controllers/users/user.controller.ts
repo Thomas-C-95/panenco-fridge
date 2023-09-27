@@ -16,6 +16,10 @@ import { getFridgeProductList } from "./handlers/getFridgeProductList.handler.js
 import { transferProduct } from "./handlers/transferProduct.handler.js";
 import { transferAllProducts } from "./handlers/transferAllProducts.handler.js";
 import { transferFridgeProducts } from "./handlers/transferFridgeProducts.js";
+import { RecipeBody } from "../../contracts/recipe.body.js";
+import { createRecipe } from "./handlers/createRecipe.handler.js";
+import { RecipeView } from "../../contracts/recipe.view.js";
+import { getRecipeList } from "./handlers/getRecipeList.handler.js";
 
 @JsonController("/users")
 export class UserController{
@@ -33,6 +37,7 @@ export class UserController{
 
     }
 
+    // Get Products
     @Get("/:id/products")
     @ListRepresenter(ProductView, StatusCode.ok)
     async getProducts(@Param("id") id: string,
@@ -81,7 +86,8 @@ export class UserController{
         return deleteProduct(id, productId, fridgeName)
 
     }
-    
+
+    // Transfer Products
     @Patch("/transfer/:ownerId/:receiverId/products/:productId")
     @Representer(ProductView, StatusCode.ok)
     async transferProduct(@Param("ownerId") ownerId: string,
@@ -104,5 +110,19 @@ export class UserController{
                               @Param("receiverId") receiverId: string){
         return transferAllProducts(ownerId, receiverId)
     }
+
+    // CRUD recipes
+    @Post("/:id/recipes")
+    @Representer(RecipeView, StatusCode.created)
+    async createRecipe(@Param("id") id: string,
+                       @Body() body: RecipeBody){
+        return createRecipe(id, body);
+    }
+    @Get("/:id/recipes")
+    @ListRepresenter(RecipeView, StatusCode.ok)
+    async getRecipeList(@Param("id") id:string){
+        return getRecipeList(id)
+    }
+
 
 }
