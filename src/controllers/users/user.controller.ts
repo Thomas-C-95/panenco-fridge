@@ -23,6 +23,7 @@ import { getRecipeList } from "./handlers/getRecipeList.handler.js";
 import { deleteRecipe } from "./handlers/deleteRecipe.handler.js";
 import { getRecipe } from "./handlers/getRecipe.handler.js";
 import { updateRecipe } from "./handlers/updateRecipe.handler.js";
+import { updateMissingIngredients } from "./handlers/updatedMissingIngredients.handler.js";
 
 @JsonController("/users")
 export class UserController{
@@ -52,7 +53,7 @@ export class UserController{
     @Representer(ProductView, StatusCode.created)
     async buyProduct(@Param("id") id: string,
                      @Body() body: ProductBody){
-        return buyProduct(id, body)
+        return buyProduct(id, body);
     }
 
     @Get("/:id/products/:productId")
@@ -68,7 +69,7 @@ export class UserController{
                             @Param("fridgeName") fridgeName: string,
                             @Query() query: SearchQuery){
     
-        return getFridgeProductList(id, fridgeName, query)
+        return getFridgeProductList(id, fridgeName, query);
     }
 
     @Patch("/:id/products/:productId/fridges/:fridgeName")
@@ -86,7 +87,7 @@ export class UserController{
                         @Param("productId") productId: string,
                         @Param("fridgeName") fridgeName: string){
     
-        return deleteProduct(id, productId, fridgeName)
+        return deleteProduct(id, productId, fridgeName);
 
     }
 
@@ -96,7 +97,7 @@ export class UserController{
     async transferProduct(@Param("ownerId") ownerId: string,
                           @Param("receiverId") receiverId: string,
                           @Param("productId") productId: string){
-        return transferProduct(ownerId, receiverId, productId)
+        return transferProduct(ownerId, receiverId, productId);
     }
 
     @Patch("/transfer/:ownerId/:receiverId/fridges/:fridgeName")
@@ -104,7 +105,7 @@ export class UserController{
     async transferFridge(@Param("ownerId") ownerId: string,
                         @Param("receiverId") receiverId: string,
                         @Param("fridgeName") fridgeName: string){
-        return transferFridgeProducts(ownerId,receiverId,fridgeName)
+        return transferFridgeProducts(ownerId,receiverId,fridgeName);
     }
 
     @Patch("/transfer/:ownerId/:receiverId/products")
@@ -124,7 +125,7 @@ export class UserController{
     @Get("/:id/recipes")
     @ListRepresenter(RecipeView, StatusCode.ok)
     async getRecipeList(@Param("id") id:string){
-        return getRecipeList(id)
+        return getRecipeList(id);
     }
 
     @Delete("/:id/recipes/:recipeName")
@@ -146,6 +147,15 @@ export class UserController{
     async updateRecipe(@Param("id") id: string,
                        @Param("recipeName") recipeName: string,
                        @Body({}, {skipMissingProperties: true}) body: RecipeBody){
-        return updateRecipe(id, recipeName, body)
+        return updateRecipe(id, recipeName, body);
     }
+
+    @Patch("/:id/recipes/:recipeName/missing")
+    @Representer(UserView, StatusCode.ok)
+    async updateMissingIngredients(@Param("id") id: string,
+                                   @Param("recipeName") recipeName: string){
+    
+        return updateMissingIngredients(id, recipeName);
+    }
+
 }

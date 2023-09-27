@@ -1,5 +1,5 @@
 import { Exclude, Expose } from "class-transformer";
-import { IsString } from "class-validator";
+import { IsOptional, IsString } from "class-validator";
 
 @Exclude()
 export class ProductBody {
@@ -9,6 +9,7 @@ export class ProductBody {
     public name: string;
 
     @Expose()
+    @IsOptional()
     @IsString()
     public type: string;
     

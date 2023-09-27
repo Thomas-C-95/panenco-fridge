@@ -14,9 +14,9 @@ export class Product{
 
     @Property()
     public name: string;
-    
-    @Property()
-    public type: string;
+
+    @Property({nullable: true})
+    public type?: string;
 
     @Property()
     public size: number = Math.floor(Math.random() * 10);
