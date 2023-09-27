@@ -24,12 +24,14 @@ import { deleteRecipe } from "./handlers/deleteRecipe.handler.js";
 import { getRecipe } from "./handlers/getRecipe.handler.js";
 import { updateRecipe } from "./handlers/updateRecipe.handler.js";
 import { updateMissingIngredients } from "./handlers/updatedMissingIngredients.handler.js";
+import { OpenAPI } from "routing-controllers-openapi";
 
 @JsonController("/users")
 export class UserController{
 
     @Post("/")
     @Representer(UserView, StatusCode.created)
+    @OpenAPI({summary: "Create new user"})
     async createUser(@Body() body: UserBody){
         return createUser(body);
     }

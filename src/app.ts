@@ -1,5 +1,7 @@
 import express, { Application, NextFunction, Request, Response } from 'express';
-import { useExpressServer } from 'routing-controllers';
+import { getMetadataArgsStorage, useExpressServer, RoutingControllersOptions } from 'routing-controllers';
+import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
+import { routingControllersToSpec } from 'routing-controllers-openapi';
 import { UserController } from './controllers/users/user.controller.js';
 import { errorMiddleware } from '@panenco/papi';
 import { MikroORM, RequestContext } from '@mikro-orm/core';
@@ -7,6 +9,8 @@ import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 import 'express-async-errors';
 import ormconfig from './orm.config.js';
 import { FridgeController } from './controllers/fridges/fridge.controller.js';
+import { getMetadataStorage } from 'class-validator';
+import swaggerUi from 'swagger-ui-express';
 export class App {
 
   public orm: MikroORM<PostgreSqlDriver>;
@@ -33,6 +37,7 @@ export class App {
 
     // init controllers
     this.initializeControllers([UserController, FridgeController])
+    this.initializeSwagger();
 
     // Test base url
     this.host.get('/', (req: Request, res: Response, next: NextFunction) => {
@@ -53,6 +58,36 @@ export class App {
       routePrefix: '/api',
     })
   }
+
+  private initializeSwagger() {
+		const schemas = validationMetadatasToSchemas({
+			classValidatorMetadataStorage: getMetadataStorage(),
+			refPointerPrefix: "#/components/schemas/",
+		});
+
+		const routingControllersOptions: RoutingControllersOptions = {
+			routePrefix: "/api",
+		};
+
+		const storage = getMetadataArgsStorage();
+		const spec = routingControllersToSpec(storage, routingControllersOptions, {
+			components: {
+				schemas,
+				securitySchemes: {
+					JWT: {
+						in: "header",
+						name: "x-auth",
+						type: "apiKey",
+						bearerFormat: "JWT",
+						description: "JWT Authorization header using the JWT scheme. Example: \"x-auth: {token}\"",
+					},
+				},
+			},
+			security: [{JWT: []}],
+		});
+
+		this.host.use("/docs", swaggerUi.serve, swaggerUi.setup(spec));
+	}
 
   public async createConnection() {
     try{
