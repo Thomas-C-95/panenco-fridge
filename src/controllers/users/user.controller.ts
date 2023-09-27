@@ -38,6 +38,7 @@ export class UserController{
 
     @Get("/:id")
     @Representer(UserView, StatusCode.ok)
+    @OpenAPI({summary: "Get user with given ID"})
     async getUser(@Param("id") id: string){
         return getUser(id);
 
@@ -46,6 +47,7 @@ export class UserController{
     // Get Products
     @Get("/:id/products")
     @ListRepresenter(ProductView, StatusCode.ok)
+    @OpenAPI({summary: "Get list of all products belonging to user with given ID"})
     async getProducts(@Param("id") id: string,
                       @Query() query: SearchQuery){
         return getProductList(id, query);
@@ -53,6 +55,7 @@ export class UserController{
 
     @Post("/:id/products")
     @Representer(ProductView, StatusCode.created)
+    @OpenAPI({summary: "Create a new product for user with given ID"})
     async buyProduct(@Param("id") id: string,
                      @Body() body: ProductBody){
         return buyProduct(id, body);
@@ -60,6 +63,7 @@ export class UserController{
 
     @Get("/:id/products/:productId")
     @Representer(ProductView, StatusCode.ok)
+    @OpenAPI({summary: "Get product with given ID, belonging to user with given ID"})
     async getProduct(@Param("id") id: string,
                      @Param("productId") productId: string){
         return getProduct(id, productId);
@@ -67,6 +71,7 @@ export class UserController{
 
     @Get("/:id/fridges/:fridgeName")
     @ListRepresenter(ProductView, StatusCode.ok)
+    @OpenAPI({summary: "Get all products from frige with given name, belonging to user with given ID"})
     async getFridgeProducts(@Param("id") id: string,
                             @Param("fridgeName") fridgeName: string,
                             @Query() query: SearchQuery){
@@ -76,6 +81,7 @@ export class UserController{
 
     @Patch("/:id/products/:productId/fridges/:fridgeName")
     @Representer(ProductView, StatusCode.ok)
+    @OpenAPI({summary: "Store product with given ID, belonging to user with given ID, in fridge with given name"})
     async store(@Param("id") id: string,
                         @Param("productId") productId: string,
                         @Param("fridgeName") fridgeName: string,
@@ -85,6 +91,7 @@ export class UserController{
 
     @Delete("/:id/products/:productId/fridges/:fridgeName")
     @Representer(null, StatusCode.noContent)
+    @OpenAPI({summary: "Delete specific product for fridge with given name"})
     async deleteProduct(@Param("id") id: string,
                         @Param("productId") productId: string,
                         @Param("fridgeName") fridgeName: string){
@@ -96,6 +103,7 @@ export class UserController{
     // Transfer Products
     @Patch("/transfer/:ownerId/:receiverId/products/:productId")
     @Representer(ProductView, StatusCode.ok)
+    @OpenAPI({summary: "Transfer specific product"})
     async transferProduct(@Param("ownerId") ownerId: string,
                           @Param("receiverId") receiverId: string,
                           @Param("productId") productId: string){
@@ -104,6 +112,7 @@ export class UserController{
 
     @Patch("/transfer/:ownerId/:receiverId/fridges/:fridgeName")
     @ListRepresenter(ProductView, StatusCode.ok)
+    @OpenAPI({summary: "Transfer all products within given fridge"})
     async transferFridge(@Param("ownerId") ownerId: string,
                         @Param("receiverId") receiverId: string,
                         @Param("fridgeName") fridgeName: string){
@@ -112,6 +121,7 @@ export class UserController{
 
     @Patch("/transfer/:ownerId/:receiverId/products")
     @ListRepresenter(ProductView, StatusCode.ok)
+    @OpenAPI({summary: "transfer all products belonging to owner"})
     async transferAllProducts(@Param("ownerId") ownerId: string,
                               @Param("receiverId") receiverId: string){
         return transferAllProducts(ownerId, receiverId)
@@ -120,18 +130,21 @@ export class UserController{
     // CRUD recipes
     @Post("/:id/recipes")
     @Representer(RecipeView, StatusCode.created)
+    @OpenAPI({summary: "Create new recipe for user"})
     async createRecipe(@Param("id") id: string,
                        @Body() body: RecipeBody){
         return createRecipe(id, body);
     }
     @Get("/:id/recipes")
     @ListRepresenter(RecipeView, StatusCode.ok)
+    @OpenAPI({summary: "Get all recipes belonging to user"})
     async getRecipeList(@Param("id") id:string){
         return getRecipeList(id);
     }
 
     @Delete("/:id/recipes/:recipeName")
     @Representer(null, StatusCode.noContent)
+    @OpenAPI({summary: "Delete a specific recipe"})
     async deleteRecipe(@Param("id") id: string,
                        @Param("recipeName") recipeName: string){
         return deleteRecipe(id, recipeName);
@@ -139,6 +152,7 @@ export class UserController{
 
     @Get("/:id/recipes/:recipeName")
     @Representer(RecipeView, StatusCode.ok)
+    @OpenAPI({summary: "Get a specific recipe"})
     async getRecipe(@Param("id") id: string,
                     @Param("recipeName") recipeName: string){
         return getRecipe(id, recipeName);
@@ -146,6 +160,7 @@ export class UserController{
 
     @Patch("/:id/recipes/:recipeName")
     @Representer(RecipeView, StatusCode.ok)
+    @OpenAPI({summary: "Update a specific recipe"})
     async updateRecipe(@Param("id") id: string,
                        @Param("recipeName") recipeName: string,
                        @Body({}, {skipMissingProperties: true}) body: RecipeBody){
@@ -154,6 +169,7 @@ export class UserController{
 
     @Patch("/:id/recipes/:recipeName/missing")
     @Representer(UserView, StatusCode.ok)
+    @OpenAPI({summary: "Update list of products from user to include all necessary products for given recipe"})
     async updateMissingIngredients(@Param("id") id: string,
                                    @Param("recipeName") recipeName: string){
     
