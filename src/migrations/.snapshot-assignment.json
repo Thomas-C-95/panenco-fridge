@@ -193,15 +193,6 @@
           "nullable": false,
           "mappedType": "string"
         },
-        "type": {
-          "name": "type",
-          "type": "varchar(255)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "mappedType": "string"
-        },
         "size": {
           "name": "size",
           "type": "int",

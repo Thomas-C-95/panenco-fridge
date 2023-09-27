@@ -8,12 +8,12 @@ export const transferProduct = async (ownerId: string, receiverId: string, produ
 
     const em = RequestContext.getEntityManager();
     
-    const product = await em.findOne(Product, {'id': productId});
+    const product = await em.findOneOrFail(Product, {'id': productId});
     if (product.owner.id !== ownerId){
         throw new Forbidden("notProductOwner", 'You do not own this product');
     }
-    const owner = await em.findOne(User, {'id': ownerId});
-    const receiver = await em.findOne(User, {'id': receiverId});
+    const owner = await em.findOneOrFail(User, {'id': ownerId});
+    const receiver = await em.findOneOrFail(User, {'id': receiverId});
 
     await owner.products.init();
     owner.products.remove(product);

@@ -10,11 +10,6 @@ export class ProductView{
     public id: string;
 
     @Expose()
-    @IsOptional()
-    @IsString()
-    public name: string;
-
-    @Expose()
     @IsString()
     public type: string;
 

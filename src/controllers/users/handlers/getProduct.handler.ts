@@ -7,7 +7,7 @@ export const getProduct = async (userId:string, productId: string) => {
 
     const em = RequestContext.getEntityManager();
 
-    const product = await em.findOne(Product, {'id': productId});
+    const product = await em.findOneOrFail(Product, {'id': productId});
 
     if (userId !== product.owner.id){
         throw new Forbidden("notProductOwner", 'You do not own this product');

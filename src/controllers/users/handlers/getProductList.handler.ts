@@ -8,5 +8,5 @@ export const getProductList = async (userId:string, query: SearchQuery) => {
 
     const em = RequestContext.getEntityManager();
 
-    return em.findAndCount(Product, query.search? { $and: [{owner: {id: userId}}, {type: query.search}]}: {owner: {id: userId}})
+    return em.findAndCount(Product, query.search? { $and: [{owner: {id: userId}}, {name: query.search}]}: {owner: {id: userId}})
 }

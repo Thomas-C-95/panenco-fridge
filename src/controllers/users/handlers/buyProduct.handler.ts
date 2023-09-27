@@ -8,8 +8,8 @@ export const buyProduct = async (id: string, requestedProduct: ProductBody) => {
 
     const em = RequestContext.getEntityManager();
 
-    const user = await em.findOne(User, {id});
-    const product = await em.create(Product, requestedProduct);
+    const user = await em.findOneOrFail(User, {id});
+    const product = em.create(Product, requestedProduct);
     user.products.add(product);
 
     await em.persistAndFlush(user);

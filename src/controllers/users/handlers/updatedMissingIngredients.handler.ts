@@ -7,7 +7,7 @@ export const updateMissingIngredients = async (id: string, recipeName: string) =
 
     const em = RequestContext.getEntityManager();
 
-    const user = await em.findOne(User, id);
+    const user = await em.findOneOrFail(User, id);
     await user.recipes.init();
     await user.products.init();
     const recipe = user.recipes.find(recipe => recipe.name === recipeName);

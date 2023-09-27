@@ -7,10 +7,5 @@ export class ProductBody {
     @Expose()
     @IsString()
     public name: string;
-
-    @Expose()
-    @IsOptional()
-    @IsString()
-    public type: string;
     
 }

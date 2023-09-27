@@ -4,6 +4,7 @@ import { UserController } from './controllers/users/user.controller.js';
 import { errorMiddleware } from '@panenco/papi';
 import { MikroORM, RequestContext } from '@mikro-orm/core';
 import { PostgreSqlDriver } from '@mikro-orm/postgresql';
+import 'express-async-errors';
 import ormconfig from './orm.config.js';
 import { FridgeController } from './controllers/fridges/fridge.controller.js';
 export class App {

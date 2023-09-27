@@ -48,7 +48,9 @@
 		"@panenco/papi": "^1.6.0",
 		"cors": "^2.8.5",
 		"express": "^4.18.2",
+		"express-async-errors": "^3.1.1",
 		"routing-controllers": "^0.10.4",
+		"typings": "link:@mikro-orm/core/typings",
 		"uuid": "^9.0.1"
 	},
 	"pnpm": {
@@ -59,7 +61,7 @@
 	"mikro-orm": {
 		"useTsNode": true,
 		"configPaths": [
-		  "./src/orm.config.ts"
+			"./src/orm.config.ts"
 		]
 	}
 }

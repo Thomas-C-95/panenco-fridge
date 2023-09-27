@@ -8,7 +8,7 @@ import e from "express";
 export const transferFridgeProducts = async (ownerId: string, receiverId: string, fridgeName: string)=>{
     const em = RequestContext.getEntityManager();
 
-    const fridge = await em.findOne(Fridge, {'name': fridgeName});
+    const fridge = await em.findOneOrFail(Fridge, {'name': fridgeName});
     await fridge.contents.init();
 
     const fridgeproducts = fridge.contents.filter(product => product.owner.id === ownerId);
@@ -17,11 +17,11 @@ export const transferFridgeProducts = async (ownerId: string, receiverId: string
         throw new NotFound("noProducts", "No products found in this fridge");
     }
     
-    const owner = await em.findOne(User, {'id': ownerId});
+    const owner = await em.findOneOrFail(User, {'id': ownerId});
     await owner.products.init();
     owner.products.remove(fridgeproducts);
 
-    const receiver = await em.findOne(User, {'id': receiverId});
+    const receiver = await em.findOneOrFail(User, {'id': receiverId});
     await receiver.products.init();
     receiver.products.add(fridgeproducts);
 
