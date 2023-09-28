@@ -18,7 +18,7 @@ export class Product{
     @Property()
     public size: number = Math.floor(Math.random() * 10);
 
-    @ManyToOne('User')
+    @ManyToOne('User', {nullable: true})
     public owner: Rel<User>; 
 
     @ManyToMany(() => Fridge, fridge => fridge.contents, {nullable: true}) // many to many -> many to zero

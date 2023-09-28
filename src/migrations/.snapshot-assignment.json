@@ -208,7 +208,7 @@
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
-          "nullable": false,
+          "nullable": true,
           "mappedType": "uuid"
         }
       },
@@ -237,6 +237,7 @@
             "id"
           ],
           "referencedTableName": "public.user",
+          "deleteRule": "set null",
           "updateRule": "cascade"
         }
       }
