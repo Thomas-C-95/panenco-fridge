@@ -22,6 +22,7 @@ export const deleteProduct = async(userId: string, productId: string, fridgeName
     }
 
     fridge.contents.remove(fridgeProduct);
+    em.remove(product);
     await em.persistAndFlush(fridge);
 
     return null;
