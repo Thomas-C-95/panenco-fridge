@@ -12,11 +12,11 @@ export const transferProduct = async (ownerId: string, receiverId: string, produ
     if (product.owner.id !== ownerId){
         throw new Forbidden("notProductOwner", 'You do not own this product');
     }
-    const owner = await em.findOneOrFail(User, {'id': ownerId});
     const receiver = await em.findOneOrFail(User, {'id': receiverId});
-
+    product.owner = receiver;
+    
+    const owner = await em.findOneOrFail(User, {'id': ownerId});
     await owner.products.init();
-    owner.products.remove(product);
 
     await receiver.products.init();
     receiver.products.add(product);

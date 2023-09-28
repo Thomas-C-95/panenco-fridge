@@ -16,12 +16,17 @@ export const transferFridgeProducts = async (ownerId: string, receiverId: string
     if (!fridgeproducts){
         throw new NotFound("noProducts", "No products found in this fridge");
     }
-    
+
     const owner = await em.findOneOrFail(User, {'id': ownerId});
+    const receiver = await em.findOneOrFail(User, {'id': receiverId});
+    
+    fridgeproducts.forEach(element => {
+        element.owner = receiver;
+    });
+    
     await owner.products.init();
     owner.products.remove(fridgeproducts);
 
-    const receiver = await em.findOneOrFail(User, {'id': receiverId});
     await receiver.products.init();
     receiver.products.add(fridgeproducts);
 
