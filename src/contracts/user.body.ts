@@ -1,5 +1,5 @@
 import { Exclude, Expose } from 'class-transformer';
-import { IsString, Length } from 'class-validator';
+import { IsOptional, IsString, Length } from 'class-validator';
 
 @Exclude()
 export class UserBody{
@@ -11,6 +11,11 @@ export class UserBody{
     @Expose()
     @IsString()
     public email: string;
+
+    @Expose()
+    @IsString()
+    @IsOptional()
+    public role: string;
 
     @Expose()
     @IsString()

@@ -17,6 +17,9 @@ export class User extends BaseEntity<User, 'id'>{
     public name: string;
 
     @Property()
+    public role: string = "user"
+
+    @Property()
     public password: string;
 
     @OneToMany(()=> Product, product => product.owner)
