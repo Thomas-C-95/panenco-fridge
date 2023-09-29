@@ -3,7 +3,7 @@ import { getMetadataArgsStorage, useExpressServer, RoutingControllersOptions } f
 import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
 import { routingControllersToSpec } from 'routing-controllers-openapi';
 import { UserController } from './controllers/users/user.controller.js';
-import { errorMiddleware } from '@panenco/papi';
+import { errorMiddleware, getAuthenticator } from '@panenco/papi';
 import { MikroORM, RequestContext } from '@mikro-orm/core';
 import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 import 'express-async-errors';
@@ -11,6 +11,7 @@ import ormconfig from './orm.config.js';
 import { FridgeController } from './controllers/fridges/fridge.controller.js';
 import { getMetadataStorage } from 'class-validator';
 import swaggerUi from 'swagger-ui-express';
+import { AuthController } from './controllers/auth/auth.controller.js';
 export class App {
 
   public orm: MikroORM<PostgreSqlDriver>;
@@ -36,7 +37,7 @@ export class App {
     });
 
     // init controllers
-    this.initializeControllers([UserController, FridgeController])
+    this.initializeControllers([UserController, FridgeController, AuthController])
     this.initializeSwagger();
 
     // Test base url
@@ -56,6 +57,7 @@ export class App {
       controllers,
       defaultErrorHandler: false,
       routePrefix: '/api',
+      authorizationChecker: getAuthenticator('validationstring')
     })
   }
 

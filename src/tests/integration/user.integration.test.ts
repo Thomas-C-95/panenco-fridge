@@ -6,6 +6,7 @@ import { StatusCode } from "@panenco/papi";
 import { expect } from "chai";
 import { Product } from "../../entities/product.entity.js";
 import { Fridge } from "../../entities/fridge.entity.js";
+import { LoginBody } from "../../contracts/login.body.js";
 
 const fridgeFixture: Fridge = {
     name: 'funnyfridge',
@@ -40,7 +41,8 @@ describe("Integration Test", () => {
             // Create User
             const newuser = {
                 name: "newuser",
-                email: "newuser@panenco.com"
+                email: "newuser@panenco.com",
+                password: "password"
             } as User;
 
             const {body: createUserResponse} = await request
@@ -55,9 +57,19 @@ describe("Integration Test", () => {
             expect(foundCreatedUser.name).to.equal(newuser.name);
             expect(foundCreatedUser.email).to.equal(newuser.email);
 
+            // Login
+            const loginInput = {email: newuser.email, password: newuser.password} as LoginBody;
+
+            const {body: loginResponse} = await request
+            .post("/api/auth/tokens")
+            .send({...loginInput})
+            .expect(StatusCode.ok);
+
+            const token = loginResponse.token;            
             // Get User
             const {body: getUserResponse} = await request
             .get(`/api/users/${createUserResponse.id}`)
+            .set('x-auth', token)
             .expect(StatusCode.ok);
 
             expect(getUserResponse.name).to.equal(newuser.name);
@@ -73,16 +85,19 @@ describe("Integration Test", () => {
             .send({
                 ...newProduct
             })
+            .set('x-auth', token)
             .expect(StatusCode.created);
 
             // Store Product
             const {body: storeProductResponse} = await request
             .patch(`/api/users/${createUserResponse.id}/products/${createProductResponse.id}/fridges/${fridge.name}`)
+            .set('x-auth', token)
             .expect(StatusCode.ok);
 
             // Get Product
             const {body: getProductResponse} = await request
             .get(`/api/users/${createUserResponse.id}/products/${createProductResponse.id}`)
+            .set('x-auth', token)
             .expect(StatusCode.ok);
 
             const foundCreatedProduct = await em.findOne(Product, {id: createProductResponse.id});
@@ -94,7 +109,8 @@ describe("Integration Test", () => {
             // Create second user
             const seconduser = {
                 name: "seconduser",
-                email: "seconduser@panenco.com"
+                email: "seconduser@panenco.com",
+                password: "password"
             } as User;
 
             const {body: createSecondUserResponse} = await request
@@ -102,11 +118,13 @@ describe("Integration Test", () => {
             .send({
                 ...seconduser
             })
+            .set('x-auth', token)
             .expect(StatusCode.created);
 
             // Gift product to second user
             const {body: giftProductResponse} = await request
             .patch(`/api/users/transfer/${createUserResponse.id}/${createSecondUserResponse.id}/products/${createProductResponse.id}`)
+            .set('x-auth', token)
             .expect(StatusCode.ok);
 
             const em2 = orm.em.fork();
@@ -116,6 +134,7 @@ describe("Integration Test", () => {
             // Delete Product
             const {body: deleteProductResponse} = await request
             .delete(`/api/users/${createSecondUserResponse.id}/products/${createProductResponse.id}/fridges/${fridge.name}`)
+            .set('x-auth', token)
             .expect(StatusCode.noContent);
             
             const em3 = orm.em.fork();
@@ -128,6 +147,7 @@ describe("Integration Test", () => {
             try{
                 const {body: getDeletedProductResponse} = await request
                 .get(`/api/users/${createSecondUserResponse.id}/products/${createProductResponse.id}`)
+                .set('x-auth', token)
                 .expect(StatusCode.ok);
                 console.log(getDeletedProductResponse.name);
             } catch(error){

@@ -16,6 +16,9 @@ export class User extends BaseEntity<User, 'id'>{
     @Property()
     public name: string;
 
+    @Property()
+    public password: string;
+
     @OneToMany(()=> Product, product => product.owner)
     public products = new Collection<Product>(this);
 

@@ -32,11 +32,13 @@ import { updateMissingIngredients } from "../../controllers/users/handlers/updat
 const userFixtures: UserBody[] = [
     {
         name: "first user",
-        email: "firstuser.@panenco.com"
+        email: "firstuser.@panenco.com",
+        password: "password"
     } as UserBody,
     {
         name: "second user",
-        email: "second.user@panenco.com"
+        email: "second.user@panenco.com",
+        password: "password2"
     } as UserBody
 ]
 const fridgeFixtures: FridgeBody[] = [
@@ -106,7 +108,8 @@ describe('Handler tests', () => {
             await RequestContext.createAsync(orm.em.fork(), async() => {
                 const newuser  = {
                     name: "new user",
-                    email: "newuser@panenco.com"
+                    email: "newuser@panenco.com",
+                    password: "password"
                 } as UserBody;
                 const res = await createUser(newuser);
                 expect(res.name === newuser.name).true;
