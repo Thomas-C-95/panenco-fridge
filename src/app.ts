@@ -12,6 +12,7 @@ import { FridgeController } from './controllers/fridges/fridge.controller.js';
 import { getMetadataStorage } from 'class-validator';
 import swaggerUi from 'swagger-ui-express';
 import { AuthController } from './controllers/auth/auth.controller.js';
+import { ProductController } from './controllers/product/product.controller.js';
 export class App {
 
   public orm: MikroORM<PostgreSqlDriver>;
@@ -37,7 +38,7 @@ export class App {
     });
 
     // init controllers
-    this.initializeControllers([UserController, FridgeController, AuthController])
+    this.initializeControllers([UserController, FridgeController, ProductController, AuthController])
     this.initializeSwagger();
 
     // Test base url

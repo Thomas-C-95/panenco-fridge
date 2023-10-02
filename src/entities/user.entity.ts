@@ -2,6 +2,7 @@ import { BaseEntity, Collection, Entity, OneToMany, PrimaryKey, Property } from 
 import { randomUUID } from "crypto";
 import { Product } from "./product.entity.js";
 import { Recipe } from "./recipe.entity.js";
+import { ProductQuantity } from "./product.quantity.entity.js";
 
 
 @Entity()
@@ -22,8 +23,8 @@ export class User extends BaseEntity<User, 'id'>{
     @Property()
     public password: string;
 
-    @OneToMany(()=> Product, product => product.owner)
-    public products = new Collection<Product>(this);
+    @OneToMany(()=> ProductQuantity, productQuantity => productQuantity.owner)
+    public products = new Collection<ProductQuantity>(this);
 
     @OneToMany(() => Recipe, recipy => recipy.owner, {orphanRemoval:true})
     public recipes = new Collection<Recipe>(this);
