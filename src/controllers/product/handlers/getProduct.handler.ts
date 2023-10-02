@@ -1,17 +1,15 @@
 import { RequestContext } from "@mikro-orm/core"
 import { Product } from "../../../entities/product.entity.js";
 import { Forbidden } from "@panenco/papi";
+import { ProductQuantity } from "../../../entities/product.quantity.entity.js";
 
 
 export const getProduct = async (userId:string, productId: string) => {
 
     const em = RequestContext.getEntityManager();
 
-    const product = await em.findOneOrFail(Product, {'id': productId});
+    const productquantity = await em.findOneOrFail(ProductQuantity, { $and: [{owner: {id: userId}}, {product: {id: productId}}]});
 
-    if (userId !== product.owner.id){
-        throw new Forbidden("notProductOwner", 'You do not own this product');
-    }
-
+    const product = await em.findOneOrFail(Product, {id: productquantity.product.id});
     return product;
 }
