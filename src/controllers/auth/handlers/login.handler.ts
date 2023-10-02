@@ -13,7 +13,7 @@ export const login = async (body: LoginBody) => {
         throw new Unauthorized("invalidCredentials", 'Invalid credentials');
     }
 
-    const token = await createAccessToken('validationstring', 600, {userId: user.id});
+    const token = await createAccessToken('validationstring', 6000, {userId: user.id});
 
     return  token;
 

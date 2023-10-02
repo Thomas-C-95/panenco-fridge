@@ -10,8 +10,8 @@ import { createUser } from "../../controllers/users/handlers/createUser.handler.
 import { Product } from "../../entities/product.entity.js";
 import { ProductBody } from "../../contracts/product.body.js";
 import { buyProduct } from "../../controllers/users/handlers/buyProduct.handler.js";
-import { getProduct } from "../../controllers/users/handlers/getProduct.handler.js";
-import { getProductList } from "../../controllers/users/handlers/getProductList.handler.js";
+import { getProduct } from "../../controllers/product/handlers/getProduct.handler.js";
+import { getProductList } from "../../controllers/product/handlers/getProductList.handler.js";
 import { SearchQuery } from "../../contracts/search.query.js";
 import { transferProduct } from "../../controllers/users/handlers/transferProduct.handler.js";
 import { transferAllProducts } from "../../controllers/users/handlers/transferAllProducts.handler.js";
