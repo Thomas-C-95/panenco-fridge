@@ -14,11 +14,11 @@ import { getProduct } from "../../controllers/product/handlers/getProduct.handle
 import { getProductList } from "../../controllers/product/handlers/getProductList.handler.js";
 import { SearchQuery } from "../../contracts/search.query.js";
 import { transferProduct } from "../../controllers/users/handlers/transferProduct.handler.js";
-import { transferAllProducts } from "../../controllers/users/handlers/transferAllProducts.handler.js";
+import { transferAllProducts } from "../../controllers/product/handlers/transferAllProducts.handler.js";
 import { Fridge } from "../../entities/fridge.entity.js";
-import { storeProduct } from "../../controllers/users/handlers/storeProduct.handler.js";
-import { getFridgeProductList } from "../../controllers/users/handlers/getFridgeProductList.handler.js";
-import { deleteProduct } from "../../controllers/users/handlers/deleteProduct.handler.js";
+import { storeProduct } from "../../controllers/product/handlers/storeProduct.handler.js";
+import { getFridgeProductList } from "../../controllers/fridges/handlers/getFridgeProductList.handler.js";
+import { deleteProduct } from "../../controllers/product/handlers/deleteProduct.handler.js";
 import { Recipe } from "../../entities/recipe.entity.js";
 import { RecipeBody } from "../../contracts/recipe.body.js";
 import { getRecipeList } from "../../controllers/users/handlers/getRecipeList.handler.js";

@@ -8,7 +8,7 @@ export const getFridgeProductList = async (userId: string, fridgeName: string, q
 
     const em = RequestContext.getEntityManager();
 
-    return em.findAndCount(Product, {$and: [{owner: {id: userId}}, {fridge: {name: fridgeName}}]})
+    return em.findAndCount(Product, {$and: [{owner: {owner: {id: userId}}}, {owner: {location: {name: fridgeName}}}]});
     
     // Alternative (but longer)
     // const fridge = await em.findOneOrFail(Fridge, {'name': fridgeName});
