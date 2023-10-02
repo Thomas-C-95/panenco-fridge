@@ -12,7 +12,7 @@ export const storeProduct = async (userId: string, productName: string, fridgeNa
 
     // Check if fridge has capacity
     const fridge = await em.findOneOrFail(Fridge, {'name': fridgeName}, {populate: ['contents']});
-    const fridgestorage = fridge.contents.getItems().map(item => item.product.size).reduce((a, b) => a + b, 0); // Not correct, does not take quantity into account
+    const fridgestorage = fridge.contents.getItems().map(item => item.product.size*item.quantity).reduce((a, b) => a + b, 0); 
 
     const product = await em.findOneOrFail(Product, {'name': productName}, {populate: ['owner']});
     const productsize = product.size;
