@@ -45,7 +45,7 @@ export class ProductController{
     }
 
     @Patch("/:productName/fridges/:fridgeName")
-    @Representer(ProductView, StatusCode.ok)
+    @Representer(null, StatusCode.ok)
     @OpenAPI({summary: "Store product with given ID in fridge with given name"})
     @Authorized()
     @Representer(null, StatusCode.noContent)
@@ -69,7 +69,7 @@ export class ProductController{
     }
 
     // Transfer Products
-    @Patch("receiver/:receiverId")
+    @Patch("/receiver/:receiverId")
     @ListRepresenter(ProductView, StatusCode.ok)
     @OpenAPI({summary: "transfer all products belonging to owner"})
     @Authorized()
@@ -78,7 +78,7 @@ export class ProductController{
         return transferAllProducts(token.userId, receiverId)
     }
 
-    @Patch(":productName/receiver/:receiverId/")
+    @Patch("/:productName/receiver/:receiverId/")
     @Representer(ProductView, StatusCode.ok)
     @OpenAPI({summary: "Transfer specific product"})
     @Authorized()
