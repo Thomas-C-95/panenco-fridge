@@ -11,39 +11,48 @@ export const storeProduct = async (userId: string, productName: string, fridgeNa
     const em = RequestContext.getEntityManager();
 
     // Check if fridge has capacity
-    const fridge = await em.findOneOrFail(Fridge, {'name': fridgeName}, {populate: ['contents']});
+    const fridge = await em.findOneOrFail(Fridge, {name: fridgeName}, {populate: ['contents']});
     const fridgestorage = fridge.contents.getItems().map(item => item.product.size*item.quantity).reduce((a, b) => a + b, 0); 
 
-    const product = await em.findOneOrFail(Product, {'name': productName}, {populate: ['owner']});
+    const product = await em.findOneOrFail(Product, {name: productName}, {populate: ['owner']});
     const productsize = product.size;
 
     if (fridgestorage + productsize > fridge.capacity){
         throw new Forbidden("fridgeFull", 'Fridge is full');
-        return
     }
 
-    // Check if product is already in some fridge 
-    const productquantityList = await em.find(ProductQuantity, {})
-    const productQuantityId = Math.max(...productquantityList.map(productquantity => productquantity.id));
     const productquantity = await em.findOne(ProductQuantity, { $and: [{owner: {id: userId}}, {product: {name: productName}}, {location: {name : fridgeName}}]});
     
     if (!productquantity){
+    
+        // Check if product is already in some fridge 
+        const productquantityList = await em.find(ProductQuantity, {})
+        let productQuantityId: number;
+        if (productquantityList.length === 0){
+            productQuantityId = 0;
+        }
+        else{
+            productQuantityId = Math.max(...productquantityList.map(productquantity => productquantity.id));
+        }
+
         // Add new product to user and fridge
         const user = await em.findOneOrFail(User, {id: userId}, {populate: ['products']});
-        const productquantity = em.create(ProductQuantity, {id: productQuantityId+1, quantity: 1});
+        const newQuantity = em.create(ProductQuantity, {id: productQuantityId+1, quantity: 1});
 
-        user.products.add(productquantity);
-        fridge.contents.add(productquantity);
-        product.owner.add(productquantity);
-
+        user.products.add(newQuantity);
+        fridge.contents.add(newQuantity);
+        product.owner.add(newQuantity);
+        console.log("productquantity: ", newQuantity)
+        await em.persistAndFlush(newQuantity);
+        return product;
     }
     else{
         productquantity.quantity += 1;
+        await em.persistAndFlush(productquantity);
+        return productquantity.product;
     }
 
-    await em.persistAndFlush(productquantity);
-
-    return productquantity.product;
+    
     
 
 }
