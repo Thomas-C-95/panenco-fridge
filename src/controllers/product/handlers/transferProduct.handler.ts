@@ -9,7 +9,6 @@ import { Fridge } from "../../../entities/fridge.entity.js";
 export const transferProduct = async (ownerId: string, receiverId: string, productName: string)=>{
 
     const em = RequestContext.getEntityManager();
-    
     const ownerProductQuantity = await em.findOneOrFail(ProductQuantity, {$and: [{product: {name: productName}}, {owner: {id: ownerId}}]});
     
     // Decrement or remove owner product quantity
@@ -20,7 +19,6 @@ export const transferProduct = async (ownerId: string, receiverId: string, produ
         ownerProductQuantity.quantity -= 1;
     }
     
-    const receiver = await em.findOneOrFail(User, {'id': receiverId}, {populate: ['products']});
     const receiverProductQuantity = await em.findOne(ProductQuantity, {$and: [{product: {name: productName}}, {owner: {id: receiverId}}]});
     
     // Increment or create receiver product quantity
@@ -36,6 +34,7 @@ export const transferProduct = async (ownerId: string, receiverId: string, produ
         
         const fridge = await em.findOneOrFail(Fridge, {name: ownerProductQuantity.location.name}, {populate: ['contents']});
         const product = await em.findOneOrFail(Product, {name: productName}, {populate: ['owner']});
+        const receiver = await em.findOneOrFail(User, {'id': receiverId}, {populate: ['products']});
     
         fridge.contents.add(newQuantity);
         receiver.products.add(newQuantity);
