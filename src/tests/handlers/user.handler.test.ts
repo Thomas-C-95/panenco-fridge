@@ -13,7 +13,7 @@ import { buyProduct } from "../../controllers/users/handlers/buyProduct.handler.
 import { getProduct } from "../../controllers/product/handlers/getProduct.handler.js";
 import { getProductList } from "../../controllers/product/handlers/getProductList.handler.js";
 import { SearchQuery } from "../../contracts/search.query.js";
-import { transferProduct } from "../../controllers/users/handlers/transferProduct.handler.js";
+import { transferProduct } from "../../controllers/product/handlers/transferProduct.handler.js";
 import { transferAllProducts } from "../../controllers/product/handlers/transferAllProducts.handler.js";
 import { Fridge } from "../../entities/fridge.entity.js";
 import { storeProduct } from "../../controllers/product/handlers/storeProduct.handler.js";
@@ -28,6 +28,8 @@ import exp from "constants";
 import { getRecipe } from "../../controllers/users/handlers/getRecipe.handler.js";
 import { updateRecipe } from "../../controllers/users/handlers/updateRecipe.handler.js";
 import { updateMissingIngredients } from "../../controllers/users/handlers/updatedMissingIngredients.handler.js";
+import { ProductQuantity } from "../../entities/product.quantity.entity.js";
+import { createProduct } from "../../controllers/product/handlers/createProduct.handler.js";
 
 const userFixtures: UserBody[] = [
     {
@@ -55,10 +57,12 @@ const fridgeFixtures: FridgeBody[] = [
 ]
 const productFixtures: ProductBody[] = [
     {
-        name: "milk"
+        name: "milk",
+        size: 3
     } as ProductBody,
     {
-        name: "break"
+        name: "bread",
+        size: 5
     } as ProductBody,
 ]
 const recipeFixtures: RecipeBody[] = [
@@ -79,6 +83,16 @@ const recipeFixtures: RecipeBody[] = [
             "eggs": 1
         }
     }
+]
+const productQuantityFixtures: ProductQuantity[] = [
+    {   
+        id: 1,
+        quantity: 1
+    } as ProductQuantity,
+    {
+        id: 2,
+        quantity: 2
+    } as ProductQuantity
 ]
 
 describe('Handler tests', () => {
@@ -123,6 +137,8 @@ describe('Handler tests', () => {
         let orm: MikroORM<PostgreSqlDriver>;
         let users: User[];
         let products: Product[];
+        let fridges: Fridge[];
+        let productQuantities: ProductQuantity[];
         before( async () => {
             orm = await MikroORM.init(ormConfig);
         });
@@ -133,12 +149,17 @@ describe('Handler tests', () => {
             const em = orm.em.fork();
             users = userFixtures.map( x => em.create(User, x));
             products = productFixtures.map( x => em.create(Product, x));
-            users[0].products.add(products);
-            await em.persistAndFlush(users);        
+            fridges =  fridgeFixtures.map( x => em.create(Fridge, x));
+            productQuantities =  productQuantityFixtures.map( x => em.create(ProductQuantity, x));
+            users[0].products.add(productQuantities)
+            fridges[0].contents.add(productQuantities);
+            products[0].owner.add(productQuantities[0]);
+            products[1].owner.add(productQuantities[1]);
+            await em.persistAndFlush(users, products, fridges, productQuantities);        
         });
-        it("should get products by id", async () => {
+        it("should get products by Name", async () => {
             await RequestContext.createAsync(orm.em.fork(), async() => {
-                const res = await getProduct(users[0].id, products[0].id);
+                const res = await getProduct(users[0].id, products[0].name);
                 expect(res.name === products[0].name).true;
             });
         });
@@ -154,26 +175,27 @@ describe('Handler tests', () => {
         it("should get all products matching given query", async () => {
             await RequestContext.createAsync(orm.em.fork(), async() => {
                 const query = {
-                    search: "milk"
+                    search: "kitchen"
                 } as SearchQuery;
                 const [res, count] = await getProductList(users[0].id, query);
-                expect(count).to.be.equal(1);
+                expect(count).to.be.equal(2);
             });
         
         });
         it("should create a new product", async() => {
             await RequestContext.createAsync(orm.em.fork(), async() => {
                 const newProduct = {
-                    name: "meat"
+                    name: "meat",
+                    size: 15
                 } as ProductBody;
-                const res = await buyProduct(users[0].id, newProduct);
+                const res = await createProduct(newProduct);
                 expect(res.name === newProduct.name).true;
             });
         });
         it("should transfer products between users", async() => {
             await RequestContext.createAsync(orm.em.fork(), async() => {
-                const res = await transferProduct(users[0].id, users[1].id, products[0].id);
-                const prod = await getProduct(users[1].id, products[0].id);
+                const res = await transferProduct(users[0].id, users[1].id, products[0].name);
+                const prod = await getProduct(users[1].id, products[0].name);
                 expect(prod.name === products[0].name).true;
             });
         });
@@ -196,6 +218,7 @@ describe('Handler tests', () => {
         let users: User[];
         let products: Product[];
         let fridges: Fridge[];
+        let productQuantities: ProductQuantity[];
 
         before( async() => {
             orm = await MikroORM.init(ormConfig);    
@@ -208,22 +231,33 @@ describe('Handler tests', () => {
             users = userFixtures.map( x => em.create(User, x));
             fridges = fridgeFixtures.map (x => em.create(Fridge, x));
             products = productFixtures.map( x => em.create(Product, x));
-
-            users[0].products.add(products);
-            await em.persistAndFlush(users, fridges);
+            
+            productQuantities =  productQuantityFixtures.map( x => em.create(ProductQuantity, x));
+            users[0].products.add(productQuantities)
+            fridges[0].contents.add(productQuantities);
+            products[0].owner.add(productQuantities[0]);
+            products[1].owner.add(productQuantities[1]);
+            
+            await em.persistAndFlush(users, products, fridges, productQuantities);  
         });
         it ("should store a product in a fridge", async() => {
             await RequestContext.createAsync(orm.em.fork(), async() => {
-                const res = await storeProduct(users[0].id, products[0].id, fridges[0].name);
-                expect(res.fridge[0].name === fridges[0].name).true;
+                const em1 = RequestContext.getEntityManager();
+                const countbefore = (await em1.findOne(ProductQuantity, {location: {name: fridges[0].name}})).quantity;
+                const res = await storeProduct(users[0].id, products[0].name, fridges[0].name);
+                const em2 = RequestContext.getEntityManager();
+                const countafter = (await em2.findOne(ProductQuantity, {location: {name: fridges[0].name}})).quantity;
+                console.log("countbefore: ", countbefore);
+                console.log("countafter: ", countafter);
+                expect(countafter === countbefore + 1).true;
             });
         });
         it ("should fail to store a product if fridge is full", async() => {
             await RequestContext.createAsync(orm.em.fork(), async() => {
                 try{
-                    const res = await storeProduct(users[0].id, products[0].id, fridges[1].name);
+                    const res = await storeProduct(users[0].id, products[0].name, fridges[1].name);
                 } catch(error){
-                    expect(error.message).equal('Fridge capacity would be exceeded');
+                    expect(error.message).equal('Fridge is full');
                     return;
                 }
                 expect(true, "Get storing product should have raised an error").false;
@@ -234,18 +268,18 @@ describe('Handler tests', () => {
                 const query = {
                     search: undefined
                 } as SearchQuery;
-                const prod1 = await storeProduct(users[0].id, products[0].id, fridges[0].name);
-                const prod2 = await storeProduct(users[0].id, products[1].id, fridges[0].name);
                 const [res, count] = await getFridgeProductList(users[0].id, fridges[0].name, query);
                 expect(count === 2).true;
             });
         });
         it ("should delete a product from a fridge", async() => {
             await RequestContext.createAsync(orm.em.fork(), async() => {
-                const res1 = await storeProduct(users[0].id, products[0].id, fridges[0].name);
-                await deleteProduct(users[0].id, products[0].id, fridges[0].name);
-                const [res2, count] = await getFridgeProductList(users[0].id, fridges[0].name, {search: undefined});
-                expect(count === 0).true;
+                const em1 = RequestContext.getEntityManager();
+                const countbefore = (await em1.findOne(ProductQuantity, {product: {name: products[1].name}})).quantity;
+                await deleteProduct(users[0].id, products[1].name, fridges[0].name);
+                const em2 = RequestContext.getEntityManager();
+                const countafter = (await em2.findOne(ProductQuantity, {product: {name: products[1].name}})).quantity;
+                expect(countbefore === countafter+1).true;
             });
         });
     });

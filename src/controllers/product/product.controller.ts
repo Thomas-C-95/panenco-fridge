@@ -45,14 +45,12 @@ export class ProductController{
     }
 
     @Patch("/:productName/fridges/:fridgeName")
-    @Representer(null, StatusCode.ok)
+    @Representer(ProductView, StatusCode.ok)
     @OpenAPI({summary: "Store product with given ID in fridge with given name"})
     @Authorized()
-    @Representer(null, StatusCode.noContent)
     async store(@Param("productName") productName: string,
                 @Param("fridgeName") fridgeName: string,
-                @Req() {token}: RequestExt
-                ){
+                @Req() {token}: RequestExt){
         return storeProduct(token.userId, productName, fridgeName);
     }
 

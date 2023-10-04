@@ -34,7 +34,6 @@ export const storeProduct = async (userId: string, productName: string, fridgeNa
         else{
             productQuantityId = Math.max(...productquantityList.map(productquantity => productquantity.id));
         }
-
         // Add new product to user and fridge
         const user = await em.findOneOrFail(User, {id: userId}, {populate: ['products']});
         const newQuantity = em.create(ProductQuantity, {id: productQuantityId+1, quantity: 1});
@@ -42,7 +41,6 @@ export const storeProduct = async (userId: string, productName: string, fridgeNa
         user.products.add(newQuantity);
         fridge.contents.add(newQuantity);
         product.owner.add(newQuantity);
-        console.log("productquantity: ", newQuantity)
         await em.persistAndFlush(newQuantity);
         return product;
     }

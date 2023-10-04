@@ -7,6 +7,7 @@ import { expect } from "chai";
 import { Product } from "../../entities/product.entity.js";
 import { Fridge } from "../../entities/fridge.entity.js";
 import { LoginBody } from "../../contracts/login.body.js";
+import { ProductQuantity } from "../../entities/product.quantity.entity.js";
 
 const fridgeFixture: Fridge = {
     name: 'funnyfridge',
@@ -42,6 +43,7 @@ describe("Integration Test", () => {
             const newuser = {
                 name: "newuser",
                 email: "newuser@panenco.com",
+                role: "admin",
                 password: "password"
             } as User;
 
@@ -56,7 +58,6 @@ describe("Integration Test", () => {
             const foundCreatedUser = await em.findOne(User, {id: createUserResponse.id});
             expect(foundCreatedUser.name).to.equal(newuser.name);
             expect(foundCreatedUser.email).to.equal(newuser.email);
-
             // Login
             const loginInput = {email: newuser.email, password: newuser.password} as LoginBody;
 
@@ -77,11 +78,12 @@ describe("Integration Test", () => {
 
             // Create Product
             const newProduct = {
-                name: "spaghetti"
+                name: "spaghetti",
+                size: 3
             } as Product;
 
             const {body: createProductResponse} = await request
-            .post(`/api/users/${createUserResponse.id}/products`)
+            .post(`/api/products/`)
             .send({
                 ...newProduct
             })
@@ -90,26 +92,27 @@ describe("Integration Test", () => {
 
             // Store Product
             const {body: storeProductResponse} = await request
-            .patch(`/api/users/${createUserResponse.id}/products/${createProductResponse.id}/fridges/${fridge.name}`)
+            .patch(`/api/products/${createProductResponse.name}/fridges/${fridge.name}`)
             .set('x-auth', token)
             .expect(StatusCode.ok);
 
             // Get Product
             const {body: getProductResponse} = await request
-            .get(`/api/users/${createUserResponse.id}/products/${createProductResponse.id}`)
+            .get(`/api/products/${createProductResponse.name}`)
             .set('x-auth', token)
             .expect(StatusCode.ok);
 
-            const foundCreatedProduct = await em.findOne(Product, {id: createProductResponse.id});
-            expect(foundCreatedProduct.name).to.equal(newProduct.name);
-            await foundCreatedProduct.fridge.init();
-            expect(foundCreatedProduct.fridge[0].name).to.equal(fridge.name);
+            const foundCreatedProduct = await em.findOne(ProductQuantity, {product: {id: getProductResponse.id}}, {populate: ['location', 'owner']});
+            expect(getProductResponse.name).to.equal(newProduct.name);
+            expect(foundCreatedProduct.location.name).to.equal(fridge.name);
             expect(foundCreatedProduct.owner.id).to.equal(createUserResponse.id);
 
+            console.log("Get product succeeded")
             // Create second user
             const seconduser = {
                 name: "seconduser",
                 email: "seconduser@panenco.com",
+                role: 'user',
                 password: "password"
             } as User;
 
@@ -123,38 +126,37 @@ describe("Integration Test", () => {
 
             // Gift product to second user
             const {body: giftProductResponse} = await request
-            .patch(`/api/users/transfer/${createUserResponse.id}/${createSecondUserResponse.id}/products/${createProductResponse.id}`)
+            .patch(`/api/products/${createProductResponse.name}/receiver/${createSecondUserResponse.id}`)
             .set('x-auth', token)
             .expect(StatusCode.ok);
 
             const em2 = orm.em.fork();
-            const foundGiftedProduct = await em2.findOne(Product, {id: createProductResponse.id});
+            const foundGiftedProduct = await em2.findOne(ProductQuantity, {product: {id: createProductResponse.id}});
             expect(foundGiftedProduct.owner.id).to.equal(createSecondUserResponse.id);
+
+            // Login user 2
+            const loginInput2 = {email: seconduser.email, password: seconduser.password} as LoginBody;
+            const {body: loginResponse2} = await request
+            .post("/api/auth/tokens")
+            .send({...loginInput2})
+            .expect(StatusCode.ok);
+
+            const token2 = loginResponse2.token; 
 
             // Delete Product
             const {body: deleteProductResponse} = await request
-            .delete(`/api/users/${createSecondUserResponse.id}/products/${createProductResponse.id}/fridges/${fridge.name}`)
-            .set('x-auth', token)
+            .delete(`/api/products/${createProductResponse.name}/fridges/${fridge.name}`)
+            .set('x-auth', token2)
             .expect(StatusCode.noContent);
-            
-            const em3 = orm.em.fork();
-            const foundDeletedProduct = await em3.findOne(Product, {id: createProductResponse.id});
 
-            if (!foundDeletedProduct){
-                return;
-            }
+            console.log("Deleting product succeeded")
+
             // Get Product
-            try{
-                const {body: getDeletedProductResponse} = await request
-                .get(`/api/users/${createSecondUserResponse.id}/products/${createProductResponse.id}`)
-                .set('x-auth', token)
-                .expect(StatusCode.ok);
-                console.log(getDeletedProductResponse.name);
-            } catch(error){
-                expect(error.message).to.equal("Product NotFound");
-                return;
-            }
-            expect(true, "Getting deleted product should have thrown an error").to.equal(false);
+            const {body: getDeletedProductResponse} = await request
+            .get(`/api/products/${createProductResponse.name}`)
+            .set('x-auth', token)
+            .expect(StatusCode.notFound);
+    
             return;
         });
     });

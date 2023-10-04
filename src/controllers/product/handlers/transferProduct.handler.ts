@@ -26,10 +26,16 @@ export const transferProduct = async (ownerId: string, receiverId: string, produ
         receiverProductQuantity.quantity += 1;
     }
     else{
-        // Calculate Id for new productQuantity entity
+        // Check if product is already in some fridge 
         const productquantityList = await em.find(ProductQuantity, {})
-        const productQuantityId = Math.max(...productquantityList.map(productquantity => productquantity.id));
-        
+        let productQuantityId: number;
+        if (productquantityList.length === 0){
+            productQuantityId = 0;
+        }
+        else{
+            productQuantityId = Math.max(...productquantityList.map(productquantity => productquantity.id));
+        }
+
         const newQuantity = em.create(ProductQuantity, {id: productQuantityId+1, quantity: 1});
         
         const fridge = await em.findOneOrFail(Fridge, {name: ownerProductQuantity.location.name}, {populate: ['contents']});
@@ -42,5 +48,6 @@ export const transferProduct = async (ownerId: string, receiverId: string, produ
         em.persist(newQuantity);
     }
     em.flush();
-    return null;
+    const product = await em.findOne(Product, {name: productName});
+    return product;
 }
